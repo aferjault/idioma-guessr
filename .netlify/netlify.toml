@@ -7,7 +7,7 @@ redirects = []
 [functions."*"]
 
 [build]
-publish = "C:\\Users\\ferja\\OneDrive\\Documents\\26_Vibe_coding\\idioma-guessr\\dist"
+publish = "dist"
 publishOrigin = "ui"
 commandOrigin = "ui"
 command = "npm run build"
