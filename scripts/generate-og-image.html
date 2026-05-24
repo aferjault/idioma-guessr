@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Générer og-image.png</title>
+  <style>
+    body { margin: 0; background: #0f172a; display: flex; flex-direction: column; align-items: center; padding: 40px; font-family: sans-serif; }
+    canvas { border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+    button { margin-top: 24px; padding: 12px 32px; background: linear-gradient(135deg, #10b981, #06b6d4); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; }
+    p { color: #94a3b8; margin-top: 12px; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <canvas id="c" width="1200" height="630"></canvas>
+  <button onclick="download()">Télécharger og-image.png</button>
+  <p>Copier le fichier téléchargé dans <code>public/og-image.png</code></p>
+
+  <script>
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+    const W = 1200, H = 630;
+
+    // Fond dégradé sombre
+    const bg = ctx.createLinearGradient(0, 0, W, H);
+    bg.addColorStop(0, '#0f172a');
+    bg.addColorStop(1, '#1e293b');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // Cercle décoratif haut-droite
+    const glow1 = ctx.createRadialGradient(950, 150, 0, 950, 150, 300);
+    glow1.addColorStop(0, 'rgba(16,185,129,0.15)');
+    glow1.addColorStop(1, 'transparent');
+    ctx.fillStyle = glow1;
+    ctx.fillRect(0, 0, W, H);
+
+    // Cercle décoratif bas-gauche
+    const glow2 = ctx.createRadialGradient(200, 500, 0, 200, 500, 250);
+    glow2.addColorStop(0, 'rgba(6,182,212,0.12)');
+    glow2.addColorStop(1, 'transparent');
+    ctx.fillStyle = glow2;
+    ctx.fillRect(0, 0, W, H);
+
+    // --- LOGO "Idioma Guessr" ---
+    const logoY = 220;
+
+    // "Idioma" en blanc/slate
+    ctx.font = '700 96px Georgia, serif';
+    ctx.fillStyle = '#f1f5f9';
+    ctx.letterSpacing = '-3px';
+    ctx.fillText('Idioma', 120, logoY);
+
+    // "Guessr" en dégradé vert/cyan
+    const textGrad = ctx.createLinearGradient(450, 0, 750, 0);
+    textGrad.addColorStop(0, '#10b981');
+    textGrad.addColorStop(1, '#06b6d4');
+    ctx.fillStyle = textGrad;
+    ctx.fillText('Guessr', 453, logoY);
+
+    // Globe (cercle bleu)
+    ctx.beginPath();
+    ctx.arc(820, logoY - 42, 42, 0, Math.PI * 2);
+    ctx.fillStyle = '#0ea5e9';
+    ctx.fill();
+
+    // Lignes du globe
+    ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.ellipse(820, logoY - 42, 42, 16, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(820, logoY - 84);
+    ctx.lineTo(820, logoY);
+    ctx.stroke();
+
+    // Continent vert
+    ctx.beginPath();
+    ctx.ellipse(805, logoY - 52, 12, 17, -0.18, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(16,185,129,0.85)';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(832, logoY - 35, 10, 12, 0, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(16,185,129,0.7)';
+    ctx.fill();
+
+    // Trait décoratif sous le logo
+    const lineGrad = ctx.createLinearGradient(120, 0, 800, 0);
+    lineGrad.addColorStop(0, '#10b981');
+    lineGrad.addColorStop(1, '#06b6d4');
+    ctx.strokeStyle = lineGrad;
+    ctx.lineWidth = 3;
+    ctx.globalAlpha = 0.4;
+    ctx.beginPath();
+    ctx.moveTo(120, logoY + 20);
+    ctx.lineTo(830, logoY + 20);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    // --- Tagline ---
+    ctx.font = '400 32px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText('Can you guess the language? One wrong guess reveals another word.', 120, logoY + 80);
+
+    // --- Badge "Try it now" ---
+    const bx = 120, by = logoY + 130, bw = 180, bh = 52, br = 26;
+    const badgeGrad = ctx.createLinearGradient(bx, 0, bx + bw, 0);
+    badgeGrad.addColorStop(0, '#10b981');
+    badgeGrad.addColorStop(1, '#06b6d4');
+    ctx.fillStyle = badgeGrad;
+    ctx.beginPath();
+    ctx.roundRect(bx, by, bw, bh, br);
+    ctx.fill();
+    ctx.font = '600 20px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.fillStyle = 'white';
+    ctx.fillText('Try it now →', bx + 28, by + 34);
+
+    function download() {
+      const a = document.createElement('a');
+      a.download = 'og-image.png';
+      a.href = canvas.toDataURL('image/png');
+      a.click();
+    }
+  </script>
+</body>
+</html>
