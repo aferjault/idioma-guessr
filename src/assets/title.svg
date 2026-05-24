@@ -1,0 +1,29 @@
+<svg width="380" height="100" viewBox="0 0 380 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Fond blanc arrondi -->
+  <rect width="380" height="100" rx="16" fill="white"/>
+
+  <!-- "Idioma" — dark slate, serif élégant -->
+  <text x="30" y="66" font-family="Georgia, 'Times New Roman', serif"
+        font-size="42" font-weight="700" fill="#1e293b" letter-spacing="-1">Idioma</text>
+
+  <!-- "Guessr" — gradient vert/cyan -->
+  <text x="196" y="66" font-family="Georgia, 'Times New Roman', serif"
+        font-size="42" font-weight="700" fill="url(#g1)" letter-spacing="-1">Guessr</text>
+
+  <!-- Globe SVG minimaliste à droite -->
+  <circle cx="348" cy="50" r="18" fill="#0ea5e9"/>
+  <ellipse cx="348" cy="50" rx="18" ry="7" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.2"/>
+  <line x1="348" y1="32" x2="348" y2="68" stroke="rgba(255,255,255,0.4)" stroke-width="1.2"/>
+  <ellipse cx="341" cy="45" rx="5" ry="7" fill="#10b981" opacity="0.85" transform="rotate(-10 341 45)"/>
+  <ellipse cx="354" cy="53" rx="4" ry="5" fill="#10b981" opacity="0.7"/>
+
+  <!-- Trait décoratif sous le texte -->
+  <line x1="30" y1="74" x2="330" y2="74" stroke="url(#g1)" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+</svg>
