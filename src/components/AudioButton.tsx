@@ -1,7 +1,11 @@
 // Bouton d'écoute — utilise ElevenLabs si la clé API est définie, sinon Web Speech API
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, forwardRef, useImperativeHandle } from "react";
 import { Volume2, VolumeX, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+export interface AudioButtonHandle {
+  stop: () => void;
+}
 
 interface AudioButtonProps {
   text: string;
@@ -164,7 +168,8 @@ async function speakWithElevenLabs(
 
 // --- Composant ---
 
-export function AudioButton({ text, languageCode, variant = "default", disabled = false }: AudioButtonProps) {
+export const AudioButton = forwardRef<AudioButtonHandle, AudioButtonProps>(
+function AudioButton({ text, languageCode, variant = "default", disabled = false }, ref) {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const apiKey = import.meta.env.VITE_ELEVENLABS_API_KEY as string | undefined;
@@ -178,6 +183,8 @@ export function AudioButton({ text, languageCode, variant = "default", disabled 
     window.speechSynthesis?.cancel();
     setIsPlaying(false);
   }, []);
+
+  useImperativeHandle(ref, () => ({ stop }), [stop]);
 
   const speak = useCallback(async () => {
     if (disabled) return;
@@ -244,4 +251,4 @@ export function AudioButton({ text, languageCode, variant = "default", disabled 
       {variant !== "accent" && (isPlaying ? "Arrêter" : "Écouter")}
     </button>
   );
-}
+});

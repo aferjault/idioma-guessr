@@ -33,7 +33,6 @@ function App() {
     restart,
   } = useGame();
   const [showHelp, setShowHelp] = useState(false);
-  const [streakFlash, setStreakFlash] = useState(false);
   const { theme, toggle: toggleTheme } = useTheme();
   const { streak, resetTracking } = useStreak(status);
   const { soundEnabled, toggle: toggleSound } = useSound();
@@ -62,12 +61,7 @@ function App() {
     <div className="w-full min-h-screen flex justify-center">
       <div
         className="w-full max-w-lg min-h-screen flex flex-col relative"
-        style={{
-          boxShadow: sideShadow,
-          animation: streakFlash
-            ? "streak-border-flash 0.9s ease-out forwards"
-            : "none",
-        }}
+        style={{ boxShadow: sideShadow }}
       >
         {/* En-tête */}
         <header className="w-full bg-card" style={{ boxShadow: topShadow }}>
@@ -281,10 +275,6 @@ function App() {
             guessCount={guesses.length}
             maxGuesses={maxGuesses}
             onRestart={() => {
-              if (streak >= 3) {
-                setStreakFlash(true);
-                setTimeout(() => setStreakFlash(false), 900);
-              }
               resetTracking();
               restart();
             }}

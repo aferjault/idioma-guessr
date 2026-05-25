@@ -3,9 +3,9 @@ import { cn } from "@/lib/utils";
 import { Trophy, RefreshCw, XCircle } from "lucide-react";
 import type { Phrase } from "@/data/phrases";
 import { FlagIcon } from "@/components/FlagIcon";
-import { AudioButton } from "@/components/AudioButton";
+import { AudioButton, type AudioButtonHandle } from "@/components/AudioButton";
 import { playVictory, playDefeat } from "@/lib/sounds";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 interface GameOverModalProps {
   won: boolean;
@@ -22,6 +22,8 @@ export function GameOverModal({
   maxGuesses,
   onRestart,
 }: GameOverModalProps) {
+  const audioRef = useRef<AudioButtonHandle>(null);
+
   useEffect(() => {
     const t = setTimeout(() => (won ? playVictory() : playDefeat()), 120);
     return () => clearTimeout(t);
@@ -76,7 +78,7 @@ export function GameOverModal({
             <div>
               <div className="flex items-center justify-between mb-2">
                 <p className="text-xs text-muted-foreground font-medium">Phrase complète :</p>
-                <AudioButton text={phrase.text} languageCode={phrase.languageCode} variant="accent" />
+                <AudioButton ref={audioRef} text={phrase.text} languageCode={phrase.languageCode} variant="accent" />
               </div>
               <p className="text-sm text-foreground/90 italic leading-relaxed">
                 "{phrase.text}"
@@ -93,7 +95,7 @@ export function GameOverModal({
 
         {/* Bouton nouvelle partie */}
         <button
-          onClick={onRestart}
+          onClick={() => { audioRef.current?.stop(); onRestart(); }}
           className={cn(
             "w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl",
             "font-semibold text-sm transition-all duration-200",

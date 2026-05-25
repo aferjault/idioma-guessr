@@ -90,13 +90,6 @@
   50%       { transform: scale(1.15); }
 }
 
-@keyframes streak-border-flash {
-  0%   { box-shadow: 0 0 0 0px rgba(239,68,68,0); }
-  20%  { box-shadow: 0 0 0 3px rgba(239,68,68,0.8), 0 0 18px 4px rgba(239,68,68,0.35); }
-  50%  { box-shadow: 0 0 0 3px rgba(249,115,22,0.7), 0 0 18px 4px rgba(249,115,22,0.3); }
-  75%  { box-shadow: 0 0 0 2px rgba(239,68,68,0.4); }
-  100% { box-shadow: 0 0 0 0px rgba(239,68,68,0); }
-}
 
 @layer utilities {
   .streak-badge {
