@@ -45,6 +45,10 @@ export default {
         shake: "shake 0.4s ease",
         reveal: "reveal 0.4s ease-out",
         "pop-in": "popIn 0.25s ease-out",
+        "flame-wiggle": "flame-wiggle 0.7s ease-in-out infinite",
+        "streak-number-pop": "streak-number-pop 0.55s cubic-bezier(0.34,1.56,0.64,1) 0.2s both",
+        "celebration-enter": "celebration-enter 0.25s ease-out both",
+        "celebration-exit": "celebration-exit 0.45s ease-in forwards",
       },
       keyframes: {
         fadeIn: {

@@ -10,7 +10,11 @@ interface GuessInputProps {
   usedGuesses: string[];
 }
 
-export function GuessInput({ onGuess, disabled, usedGuesses }: GuessInputProps) {
+export function GuessInput({
+  onGuess,
+  disabled,
+  usedGuesses,
+}: GuessInputProps) {
   const [value, setValue] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -20,12 +24,14 @@ export function GuessInput({ onGuess, disabled, usedGuesses }: GuessInputProps) 
   const suggestions = ALL_LANGUAGES.filter(
     (l) =>
       l.language.toLowerCase().includes(value.toLowerCase()) &&
-      !usedGuesses.includes(l.language)
+      !usedGuesses.includes(l.language),
   );
 
   // Vérifie que la valeur saisie correspond exactement à une langue connue
   const isValidLanguage = ALL_LANGUAGES.some(
-    (l) => l.language.toLowerCase() === value.toLowerCase() && !usedGuesses.includes(l.language)
+    (l) =>
+      l.language.toLowerCase() === value.toLowerCase() &&
+      !usedGuesses.includes(l.language),
   );
 
   function handleSubmit(lang?: string) {
@@ -64,7 +70,7 @@ export function GuessInput({ onGuess, disabled, usedGuesses }: GuessInputProps) 
             ref={inputRef}
             type="text"
             value={value}
-            onChange={(e) => setValue(e.target.value)}
+            onChange={(e) => { setValue(e.target.value); setShowSuggestions(true); }}
             onKeyDown={handleKeyDown}
             onFocus={() => setShowSuggestions(true)}
             onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
@@ -75,7 +81,7 @@ export function GuessInput({ onGuess, disabled, usedGuesses }: GuessInputProps) 
               "bg-secondary border border-border outline-none",
               "focus:border-ring focus:ring-1 focus:ring-ring",
               "transition-all duration-200 text-sm font-medium",
-              disabled && "opacity-50 cursor-not-allowed"
+              disabled && "opacity-50 cursor-not-allowed",
             )}
             autoComplete="off"
           />
@@ -90,7 +96,7 @@ export function GuessInput({ onGuess, disabled, usedGuesses }: GuessInputProps) 
                     "flex items-center gap-2 px-4 py-2.5 cursor-pointer text-sm transition-colors",
                     i === selectedIndex
                       ? "bg-primary/20 text-foreground"
-                      : "hover:bg-muted text-foreground"
+                      : "hover:bg-muted text-foreground",
                   )}
                   onMouseDown={() => handleSubmit(lang.language)}
                 >
@@ -109,7 +115,7 @@ export function GuessInput({ onGuess, disabled, usedGuesses }: GuessInputProps) 
             "px-5 py-3 rounded-lg font-semibold text-sm transition-all duration-200",
             "bg-primary text-primary-foreground",
             "hover:opacity-90 active:scale-95",
-            (disabled || !isValidLanguage) && "opacity-40 cursor-not-allowed"
+            (disabled || !isValidLanguage) && "opacity-40 cursor-not-allowed",
           )}
         >
           Valider

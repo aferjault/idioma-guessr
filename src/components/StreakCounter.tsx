@@ -28,6 +28,7 @@ export function StreakCounter({ streak }: Props) {
       aria-label={`Série de ${streak} victoires`}
     >
       <span
+        data-streak-flame
         className={`${flameSize} leading-none transition-all duration-500`}
         style={{ filter: flameFilter }}
       >

@@ -2,10 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { GameStatus } from "./useGame";
 
 export function useStreak(status: GameStatus) {
-  const [streak, setStreak] = useState<number>(() => {
-    const saved = localStorage.getItem("streak");
-    return saved ? parseInt(saved, 10) : 0;
-  });
+  const [streak, setStreak] = useState<number>(0);
 
   // Garde la valeur précédente de status pour détecter les transitions
   const prevStatus = useRef<GameStatus>("playing");

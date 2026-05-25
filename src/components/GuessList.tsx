@@ -27,21 +27,25 @@ export function GuessList({ guesses, maxGuesses }: GuessListProps) {
             "flex items-center gap-3 px-4 py-2.5 rounded-lg border animate-slide-up",
             guess.correct
               ? "border-correct/50 bg-correct/10"
-              : "border-wrong/40 bg-wrong/8"
+              : "border-wrong/40 bg-wrong/8",
           )}
           style={{ animationDelay: `${i * 50}ms` }}
         >
           <FlagIcon languageCode={guess.languageCode} className="text-2xl" />
-          <span className={cn(
-            "flex-1 font-medium text-sm",
-            guess.correct ? "text-correct" : "text-foreground"
-          )}>
+          <span
+            className={cn(
+              "flex-1 font-medium text-sm",
+              guess.correct ? "text-correct" : "text-foreground",
+            )}
+          >
             {guess.language}
           </span>
-          <span className={cn(
-            "text-lg font-bold",
-            guess.correct ? "text-correct" : "text-wrong"
-          )}>
+          <span
+            className={cn(
+              "text-lg font-bold",
+              guess.correct ? "text-correct" : "text-wrong",
+            )}
+          >
             {guess.correct ? "✓" : "✗"}
           </span>
         </div>

@@ -274,6 +274,7 @@ function App() {
             phrase={phrase}
             guessCount={guesses.length}
             maxGuesses={maxGuesses}
+            streak={streak}
             onRestart={() => {
               resetTracking();
               restart();
