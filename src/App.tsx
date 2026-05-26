@@ -73,15 +73,15 @@ function App() {
 
             {/* Colonne centrale : titre */}
             <div className="flex flex-col items-center min-w-0">
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1">
                 <span
-                  className="text-xl sm:text-4xl font-bold tracking-tight text-foreground whitespace-nowrap"
+                  className="text-lg sm:text-4xl font-bold tracking-tight text-foreground"
                   style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
                 >
                   Idioma
                 </span>
                 <span
-                  className="text-xl sm:text-3xl font-bold tracking-tight whitespace-nowrap"
+                  className="text-lg sm:text-3xl font-bold tracking-tight"
                   style={{
                     fontFamily: "Georgia, 'Times New Roman', serif",
                     background: "linear-gradient(135deg, #10b981, #06b6d4)",
@@ -92,8 +92,8 @@ function App() {
                   Guessr
                 </span>
                 <svg
-                  width="20"
-                  height="20"
+                  width="18"
+                  height="18"
                   viewBox="0 0 36 36"
                   xmlns="http://www.w3.org/2000/svg"
                   className="shrink-0 sm:w-[26px] sm:h-[26px]"

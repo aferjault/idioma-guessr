@@ -7,10 +7,10 @@ export function StreakCounter({ streak }: Props) {
 
   // Paliers progressifs : taille flamme (3-6), éclat (7-11), texte rouge (12+)
   const flameSize =
-    streak >= 12 ? "text-3xl"
-    : streak >= 9  ? "text-2xl"
-    : streak >= 6  ? "text-xl"
-    : "text-lg";
+    streak >= 12 ? "text-2xl"
+    : streak >= 9  ? "text-xl"
+    : streak >= 6  ? "text-lg"
+    : "text-base";
 
   const flameFilter =
     streak >= 7
