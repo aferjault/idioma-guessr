@@ -14,7 +14,7 @@ export function StreakCelebration({ streak, onDone }: Props) {
 
   useEffect(() => {
     // t1 : faire disparaître le texte et le chiffre
-    const t1 = setTimeout(() => setPhase("fadetext"), 1300);
+    const t1 = setTimeout(() => setPhase("fadetext"), 800);
 
     // t2 : lancer le vol de la flamme une fois le texte disparu
     const t2 = setTimeout(() => {
@@ -71,8 +71,8 @@ export function StreakCelebration({ streak, onDone }: Props) {
     streak >= 10
       ? "Série légendaire !"
       : streak >= 5
-      ? "En feu !"
-      : "Bonne série !";
+        ? "En feu !"
+        : "Bonne série !";
 
   const textVisible = phase === "show";
   const overlayFading = phase === "fly";
@@ -82,7 +82,9 @@ export function StreakCelebration({ streak, onDone }: Props) {
       {/* Overlay avec fond + contenu */}
       <div
         className={`fixed inset-0 z-[60] flex flex-col items-center justify-center ${
-          overlayFading ? "animate-celebration-exit" : "animate-celebration-enter"
+          overlayFading
+            ? "animate-celebration-exit"
+            : "animate-celebration-enter"
         }`}
         style={{
           background:
@@ -94,7 +96,11 @@ export function StreakCelebration({ streak, onDone }: Props) {
           <span
             ref={flameRef}
             className={`leading-none ${
-              phase === "show" ? "animate-flame-wiggle" : phase === "fly" ? "opacity-0" : ""
+              phase === "show"
+                ? "animate-flame-wiggle"
+                : phase === "fly"
+                  ? "opacity-0"
+                  : ""
             }`}
             style={{ fontSize: "clamp(96px, 28vw, 160px)" }}
           >

@@ -30,7 +30,11 @@ function splitIntoWords(text: string, languageCode: string): string[] {
 }
 
 export function useGame() {
-  const [phrase, setPhrase] = useState(() => getNextPhrase());
+  const [phrase, setPhrase] = useState(() => {
+    const p = getNextPhrase();
+    console.log("[DEBUG] Langue à deviner :", p.language, `(${p.languageCode})`);
+    return p;
+  });
   const [revealedCount, setRevealedCount] = useState(1);
   const [guesses, setGuesses] = useState<GuessResult[]>([]);
   const [status, setStatus] = useState<GameStatus>("playing");
@@ -85,6 +89,7 @@ export function useGame() {
 
   const restart = useCallback(() => {
     const nextPhrase = getNextPhrase();
+    console.log("[DEBUG] Langue à deviner :", nextPhrase.language, `(${nextPhrase.languageCode})`);
     setPhrase(nextPhrase);
     setRevealedCount(1);
     setGuesses([]);
