@@ -131,7 +131,7 @@ async function speakWithWebSpeech(
 
 async function speakWithElevenLabs(
   text: string,
-  languageCode: string,
+  _languageCode: string,
   apiKey: string,
   onEnd: () => void
 ): Promise<HTMLAudioElement | null> {

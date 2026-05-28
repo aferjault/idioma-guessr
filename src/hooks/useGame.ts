@@ -50,7 +50,7 @@ export function useGame() {
     if (initialized.current) return;
     initialized.current = true;
     loadPhrase();
-  }, []);
+  }, [loadPhrase]);
 
   // Recalcul uniquement quand la phrase change
   const words = useMemo(
