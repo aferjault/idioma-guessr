@@ -6,8 +6,9 @@ Tu as 5 essais pour trouver la langue !
 
 ## Démo
 
-[idoma-guessr.netlify.app](https://idoma-guessr.netlify.app/)
-![demo](docs/demo.gif)
+🔗 **[idoma-guessr.netlify.app](https://idoma-guessr.netlify.app/)**
+
+![Démonstration du jeu IdiomaGuessr](docs/demo.gif)
 
 ## Fonctionnalités
 
