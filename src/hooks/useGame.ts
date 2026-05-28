@@ -1,5 +1,5 @@
 // Hook principal gérant toute la logique du jeu IdiomaGuessr
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { fetchRandomPhrase } from "@/services/tatoebaService";
 import { ALL_LANGUAGES } from "@/data/phrases";
 import type { Phrase } from "@/data/phrases";
@@ -43,8 +43,13 @@ export function useGame() {
     setIsLoading(false);
   }, []);
 
+  // Garde contre le double appel de StrictMode en dev
+  const initialized = useRef(false);
+
   // Chargement de la première phrase au montage du composant
   useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
     loadPhrase();
   }, []);
 
