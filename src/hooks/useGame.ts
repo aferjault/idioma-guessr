@@ -38,7 +38,6 @@ export function useGame() {
     setGuesses([]);
     setStatus("playing");
     const p = await fetchRandomPhrase();
-    console.log("[DEBUG] Langue à deviner :", p.language, `(${p.languageCode})`);
     setPhrase(p);
     setIsLoading(false);
   }, []);

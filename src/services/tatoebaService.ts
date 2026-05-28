@@ -67,7 +67,6 @@ async function fetchFromTatoeba(
   }
 
   const data: TatoebaResponse = await res.json();
-  console.log(`[Tatoeba] "${tatoebaCode}" → ${data.data?.length ?? 0} résultats bruts`);
 
   // Garde uniquement les phrases approuvées avec une traduction française et assez de mots
   const candidates = (data.data ?? []).filter((r) => {
@@ -76,7 +75,6 @@ async function fetchFromTatoeba(
     const len = estimateLength(r.text);
     return hasFrench && len >= MIN_WORD_COUNT && len <= MAX_WORD_COUNT;
   });
-  console.log(`[Tatoeba] "${tatoebaCode}" → ${candidates.length} candidats valides (≥${MIN_WORD_COUNT} mots + trad. FR)`);
 
   if (candidates.length === 0) return null;
 
