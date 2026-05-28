@@ -86,7 +86,7 @@ export const LANGUAGE_META: LanguageMeta[] = [
   },
   {
     language: "Arabe", languageCode: "ar-SA", tatoebaCode: "ara", flag: "🇸🇦",
-    hint: "Moyen-Orient / Afrique du Nord", languageFamily: "Langues sémitiques",
+    hint: "Moyen-Orient / Afrique", languageFamily: "Langues sémitiques",
     fallback: { text: "الصحراء الكبرى هي أكبر صحراء حارة في العالم وتمتد عبر قارة أفريقيا", translation: "Le Sahara est le plus grand désert chaud du monde et s'étend sur tout le continent africain" },
   },
   {
@@ -106,7 +106,7 @@ export const LANGUAGE_META: LanguageMeta[] = [
   },
   {
     language: "Finnois", languageCode: "fi-FI", tatoebaCode: "fin", flag: "🇫🇮",
-    hint: "Europe du Nord", languageFamily: "Langues finno-ougriennes",
+    hint: "Scandinavie", languageFamily: "Langues finno-ougriennes",
     fallback: { text: "Järven rannalla istuminen hiljaisena iltana tuntuu rauhoittavalta", translation: "S'asseoir au bord d'un lac lors d'une soirée calme est une expérience apaisante" },
   },
   {
@@ -136,7 +136,7 @@ export const LANGUAGE_META: LanguageMeta[] = [
   },
   {
     language: "Bulgare", languageCode: "bg-BG", tatoebaCode: "bul", flag: "🇧🇬",
-    hint: "Europe du Sud-Est", languageFamily: "Langues slaves",
+    hint: "Les Balkans", languageFamily: "Langues slaves",
     fallback: { text: "Слънцето изгрява над планините и осветява цялата долина", translation: "Le soleil se lève au-dessus des montagnes et illumine toute la vallée" },
   },
   {
@@ -151,7 +151,7 @@ export const LANGUAGE_META: LanguageMeta[] = [
   },
   {
     language: "Croate", languageCode: "hr-HR", tatoebaCode: "hrv", flag: "🇭🇷",
-    hint: "Europe du Sud-Est", languageFamily: "Langues slaves",
+    hint: "Les Balkans", languageFamily: "Langues slaves",
     fallback: { text: "Sunce zalazi iza otoka i nebo se boji crvenom i narančastom bojom", translation: "Le soleil se couche derrière les îles et le ciel se teinte de rouge et d'orange" },
   },
   {
@@ -187,22 +187,22 @@ export const LANGUAGE_META: LanguageMeta[] = [
   },
   {
     language: "Lituanien", languageCode: "lt-LT", tatoebaCode: "lit", flag: "🇱🇹",
-    hint: "Europe du Nord", languageFamily: "Langues baltes",
+    hint: "Pays baltes", languageFamily: "Langues baltes",
     fallback: { text: "Ruduo miške yra labai gražus kai lapai keičia spalvas", translation: "L'automne en forêt est très beau quand les feuilles changent de couleur" },
   },
   {
     language: "Letton", languageCode: "lv-LV", tatoebaCode: "lav", flag: "🇱🇻",
-    hint: "Europe du Nord", languageFamily: "Langues baltes",
+    hint: "Pays baltes", languageFamily: "Langues baltes",
     fallback: { text: "Meži klāj lielu daļu valsts un ir pilni ar savvaļas dzīvniekiem", translation: "Les forêts couvrent une grande partie du pays et sont pleines d'animaux sauvages" },
   },
   {
     language: "Estonien", languageCode: "et-EE", tatoebaCode: "est", flag: "🇪🇪",
-    hint: "Europe du Nord", languageFamily: "Langues finno-ougriennes",
+    hint: "Pays baltes", languageFamily: "Langues finno-ougriennes",
     fallback: { text: "Meri on talvel külm aga suvel saab seal ujuda", translation: "La mer est froide en hiver mais on peut y nager en été" },
   },
   {
     language: "Serbe", languageCode: "sr-RS", tatoebaCode: "srp", flag: "🇷🇸",
-    hint: "Europe du Sud-Est", languageFamily: "Langues slaves",
+    hint: "Les Balkans", languageFamily: "Langues slaves",
     fallback: { text: "Зима у планинама доноси много снега и хладног ваздуха", translation: "L'hiver dans les montagnes apporte beaucoup de neige et d'air froid" },
   },
   {
@@ -217,12 +217,12 @@ export const LANGUAGE_META: LanguageMeta[] = [
   },
   {
     language: "Macédonien", languageCode: "mk-MK", tatoebaCode: "mkd", flag: "🇲🇰",
-    hint: "Europe du Sud-Est", languageFamily: "Langues slaves",
+    hint: "Les Balkans", languageFamily: "Langues slaves",
     fallback: { text: "Дрвјата цутат во пролет и ги красат улиците на градот", translation: "Les arbres fleurissent au printemps et ornent les rues de la ville" },
   },
   {
     language: "Islandais", languageCode: "is-IS", tatoebaCode: "isl", flag: "🇮🇸",
-    hint: "Scandinavie", languageFamily: "Langues germaniques",
+    hint: "Europe du Nord", languageFamily: "Langues germaniques",
     fallback: { text: "Náttúran er mjög falleg um sumarið þegar sólin skín", translation: "La nature est très belle en été quand le soleil brille" },
   },
   {
@@ -237,7 +237,7 @@ export const LANGUAGE_META: LanguageMeta[] = [
   },
   {
     language: "Bosnien", languageCode: "bs-BA", tatoebaCode: "bos", flag: "🇧🇦",
-    hint: "Europe du Sud-Est", languageFamily: "Langues slaves",
+    hint: "Les Balkans", languageFamily: "Langues slaves",
     fallback: { text: "Rijeka teče polako kroz dolinu i odražava nebo iznad nje", translation: "La rivière coule lentement à travers la vallée et reflète le ciel au-dessus" },
   },
   {
@@ -292,12 +292,12 @@ export const LANGUAGE_META: LanguageMeta[] = [
   },
   {
     language: "Swahili", languageCode: "sw-KE", tatoebaCode: "swh", flag: "🇰🇪",
-    hint: "Afrique de l'Est", languageFamily: "Langues bantoues",
+    hint: "Afrique", languageFamily: "Langues bantoues",
     fallback: { text: "Mvua inanyesha kwa nguvu na mto unajaa maji mazuri", translation: "La pluie tombe fort et la rivière se remplit d'eau fraîche" },
   },
   {
     language: "Afrikaans", languageCode: "af-ZA", tatoebaCode: "afr", flag: "🇿🇦",
-    hint: "Afrique du Sud", languageFamily: "Langues germaniques",
+    hint: "Afrique", languageFamily: "Langues germaniques",
     fallback: { text: "Die berg is bedek met sneeu in die winter en lyk baie mooi", translation: "La montagne est couverte de neige en hiver et semble très belle" },
   },
   {

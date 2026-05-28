@@ -8,7 +8,7 @@ interface ProgressBarProps {
 
 export function ProgressBar({ used, max }: ProgressBarProps) {
   const percentage = (used / max) * 100;
-  const isWarning = used >= max - 2;
+  const isWarning = used >= max - 3;
   const isDanger = used >= max - 1;
 
   return (

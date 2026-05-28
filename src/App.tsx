@@ -236,8 +236,8 @@ function App() {
 
               {/* Indices progressifs */}
               <div className="w-full flex flex-col gap-2">
-                {/* Zone géographique — visible à partir de la 3e tentative */}
-                {guesses.length >= 3 && phrase.hint && (
+                {/* Zone géographique — visible à partir de la 2e tentative */}
+                {guesses.length >= 2 && phrase.hint && (
                   <div className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border bg-muted/50 text-sm animate-fade-in">
                     <MapPin size={14} className="text-primary shrink-0" />
                     <span className="text-muted-foreground">Zone :</span>
@@ -246,8 +246,8 @@ function App() {
                     </span>
                   </div>
                 )}
-                {/* Famille linguistique — visible à partir de la 4e tentative */}
-                {guesses.length >= 4 && phrase.languageFamily && (
+                {/* Famille linguistique — visible à partir de la 3e tentative */}
+                {guesses.length >= 3 && phrase.languageFamily && (
                   <div className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border bg-muted/50 text-sm animate-fade-in">
                     <Globe size={14} className="text-primary shrink-0" />
                     <span className="text-muted-foreground">Famille :</span>
