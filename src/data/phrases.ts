@@ -9,6 +9,7 @@ export interface Phrase {
   language: string;
   languageCode: string;   // BCP-47 (pour la synthèse vocale Web Speech API)
   flag: string;
+  flagCode?: string;      // Code flag-icons pour les subdivisions (ex: "es-ct" pour Catalogne)
   hint?: string;          // Zone géographique (indice à 3/5)
   languageFamily?: string; // Famille linguistique (indice à 4/5)
 }
@@ -18,6 +19,7 @@ export interface LanguageMeta {
   languageCode: string;   // BCP-47
   tatoebaCode: string;    // ISO 639-3 (code utilisé par l'API Tatoeba)
   flag: string;
+  flagCode?: string;      // Code flag-icons pour les subdivisions (ex: "es-ct" pour Catalogne)
   hint?: string;
   languageFamily?: string;
   fallback: {             // Phrase statique de secours si l'API échoue
@@ -209,7 +211,7 @@ export const LANGUAGE_META: LanguageMeta[] = [
     fallback: { text: "Pomlad prinese lepe cvetove in toplo sonce na vrtove", translation: "Le printemps apporte de belles fleurs et un soleil chaud dans les jardins" },
   },
   {
-    language: "Catalan", languageCode: "ca-ES", tatoebaCode: "cat", flag: "🏴󠁥󠁳󠁣󠁴󠁿",
+    language: "Catalan", languageCode: "ca-ES", tatoebaCode: "cat", flag: "🏴󠁥󠁳󠁣󠁴󠁿", flagCode: "es-ct",
     hint: "Europe du Sud", languageFamily: "Langues romanes",
     fallback: { text: "El cel és molt blau quan el sol brilla sobre la mar", translation: "Le ciel est très bleu quand le soleil brille sur la mer" },
   },
@@ -222,11 +224,6 @@ export const LANGUAGE_META: LanguageMeta[] = [
     language: "Islandais", languageCode: "is-IS", tatoebaCode: "isl", flag: "🇮🇸",
     hint: "Scandinavie", languageFamily: "Langues germaniques",
     fallback: { text: "Náttúran er mjög falleg um sumarið þegar sólin skín", translation: "La nature est très belle en été quand le soleil brille" },
-  },
-  {
-    language: "Galicien", languageCode: "gl-ES", tatoebaCode: "glg", flag: "🏴󠁥󠁳󠁧󠁡󠁿",
-    hint: "Europe du Sud", languageFamily: "Langues romanes",
-    fallback: { text: "A chuvia cae sobre os campos verdes e os ríos enchen", translation: "La pluie tombe sur les champs verts et les rivières se remplissent" },
   },
   {
     language: "Irlandais", languageCode: "ga-IE", tatoebaCode: "gle", flag: "🇮🇪",
@@ -311,8 +308,9 @@ export const LANGUAGE_META: LanguageMeta[] = [
 ];
 
 // Liste de toutes les langues pour l'autocomplétion du champ de saisie
-export const ALL_LANGUAGES = LANGUAGE_META.map(({ language, flag, languageCode }) => ({
+export const ALL_LANGUAGES = LANGUAGE_META.map(({ language, flag, languageCode, flagCode }) => ({
   language,
   flag,
   languageCode,
+  flagCode,
 }));

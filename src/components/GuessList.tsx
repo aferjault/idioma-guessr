@@ -5,6 +5,7 @@ import { FlagIcon } from "@/components/FlagIcon";
 export type GuessResult = {
   language: string;
   languageCode: string;
+  flagCode?: string;
   correct: boolean;
 };
 
@@ -31,7 +32,7 @@ export function GuessList({ guesses, maxGuesses }: GuessListProps) {
           )}
           style={{ animationDelay: `${i * 50}ms` }}
         >
-          <FlagIcon languageCode={guess.languageCode} className="text-2xl" />
+          <FlagIcon languageCode={guess.languageCode} flagCode={guess.flagCode} className="text-2xl" />
           <span
             className={cn(
               "flex-1 font-medium text-sm",

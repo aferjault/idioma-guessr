@@ -98,6 +98,7 @@ function buildPhrase(
     language: meta.language,
     languageCode: meta.languageCode,
     flag: meta.flag,
+    flagCode: meta.flagCode,
     hint: meta.hint,
     languageFamily: meta.languageFamily,
   };

@@ -4,6 +4,8 @@ import { cn } from "@/lib/utils";
 interface FlagIconProps {
   // Code BCP-47 (ex: "fr-FR", "zh-CN", "ar-SA") — on extrait le code pays automatiquement
   languageCode: string;
+  // Surcharge optionnelle pour les subdivisions flag-icons (ex: "es-ct" pour Catalogne)
+  flagCode?: string;
   className?: string;
 }
 
@@ -12,8 +14,8 @@ function getCountryCode(languageCode: string): string {
   return languageCode.split("-")[1]?.toLowerCase() ?? languageCode.split("-")[0].toLowerCase();
 }
 
-export function FlagIcon({ languageCode, className }: FlagIconProps) {
-  const code = getCountryCode(languageCode);
+export function FlagIcon({ languageCode, flagCode, className }: FlagIconProps) {
+  const code = flagCode ?? getCountryCode(languageCode);
   return (
     <span
       className={cn("fi", `fi-${code}`, "rounded-sm", className)}

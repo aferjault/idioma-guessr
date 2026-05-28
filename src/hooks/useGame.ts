@@ -76,6 +76,7 @@ export function useGame() {
       const newGuess: GuessResult = {
         language: langInfo?.language ?? languageName,
         languageCode: langInfo?.languageCode ?? "xx-XX",
+        flagCode: langInfo?.flagCode,
         correct: isCorrect,
       };
 

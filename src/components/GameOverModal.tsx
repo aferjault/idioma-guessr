@@ -91,6 +91,7 @@ export function GameOverModal({
             <div className="flex items-center gap-3">
               <FlagIcon
                 languageCode={phrase.languageCode}
+                flagCode={phrase.flagCode}
                 className="text-4xl"
               />
               <div>

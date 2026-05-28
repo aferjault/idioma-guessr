@@ -100,7 +100,7 @@ export function GuessInput({
                   )}
                   onMouseDown={() => handleSubmit(lang.language)}
                 >
-                  <FlagIcon languageCode={lang.languageCode} />
+                  <FlagIcon languageCode={lang.languageCode} flagCode={lang.flagCode} />
                   <span className="font-medium">{lang.language}</span>
                 </li>
               ))}
