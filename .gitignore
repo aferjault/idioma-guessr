@@ -18,6 +18,7 @@ dist-ssr
 
 # Fichiers locaux Claude Code
 .claude/
+CLAUDE.md
 
 # Fichiers Netlify locaux
 .netlify/state.json

@@ -1,73 +1,53 @@
-# React + TypeScript + Vite
+# IdiomaGuessr 🌍
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Jeu de devinette de langues. Une phrase dans une langue étrangère est progressivement révélée — à chaque tentative ratée, un mot supplémentaire apparaît. Tu as 5 essais pour trouver la langue.
 
-Currently, two official plugins are available:
+## Démo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+> _Projet en cours — démo à venir_
 
-## React Compiler
+## Fonctionnalités
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Révélation progressive** : les mots se dévoilent un à un à chaque mauvaise réponse
+- **57 langues** jouables avec drapeaux et autocomplétion
+- **Indices progressifs** : zone géographique (tentative 3), famille linguistique (tentative 4)
+- **Lecture audio** de la phrase via Web Speech API
+- **Streak** : compteur de victoires consécutives avec animation
+- **Thème clair/sombre**
+- **Effets sonores** activables/désactivables
+- **Phrases réelles** issues de l'API [Tatoeba](https://tatoeba.org)
 
-## Expanding the ESLint configuration
+## Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+| Outil | Rôle |
+|---|---|
+| React 19 + TypeScript | UI |
+| Vite | Build & dev server |
+| Tailwind CSS | Styles |
+| Radix UI | Composants accessibles |
+| flag-icons | Drapeaux CSS |
+| Tatoeba API | Source des phrases |
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Installation
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+git clone https://github.com/aferjault/idioma-guessr.git
+cd idioma-guessr
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Ouvrir [http://localhost:5173](http://localhost:5173) dans le navigateur.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Scripts
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev      # Serveur de développement
+npm run build    # Build de production
+npm run preview  # Prévisualiser le build
+npm run lint     # ESLint
 ```
+
+## Licence
+
+MIT
