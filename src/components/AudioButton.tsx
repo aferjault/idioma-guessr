@@ -1,4 +1,4 @@
-// Bouton d'écoute — utilise ElevenLabs si la clé API est définie, sinon Web Speech API
+// Bouton d'écoute — appelle /api/tts (proxy ElevenLabs côté serveur), repli sur Web Speech API
 import { useState, useCallback, useRef, forwardRef, useImperativeHandle } from "react";
 import { Volume2, VolumeX, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -13,11 +13,6 @@ interface AudioButtonProps {
   variant?: "default" | "accent";
   disabled?: boolean;
 }
-
-// Voix ElevenLabs : "George" — voice_id premade disponible sur tous les comptes, y compris gratuits.
-const ELEVENLABS_VOICE_ID = "JBFqnCBsd6RMkjVDRZzb";
-// eleven_v3 supporte 70+ langues dont le vietnamien, le tagalog, etc.
-const ELEVENLABS_MODEL = "eleven_v3";
 
 // Extrait le code ISO 639-1 depuis un code BCP-47 (ex: "nb-NO" → "nb")
 function toIso639(bcp47: string): string {
@@ -127,38 +122,23 @@ async function speakWithWebSpeech(
   window.speechSynthesis.speak(utterance);
 }
 
-// --- ElevenLabs ---
+// --- ElevenLabs via proxy /api/tts (clé côté serveur, jamais exposée au client) ---
 
 async function speakWithElevenLabs(
   text: string,
-  _languageCode: string,
-  apiKey: string,
   onEnd: () => void
 ): Promise<HTMLAudioElement | null> {
-  const res = await fetch(
-    `https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}?output_format=mp3_44100_128`,
-    {
-      method: "POST",
-      headers: {
-        "xi-api-key": apiKey,
-        "Content-Type": "application/json",
-        Accept: "audio/mpeg",
-      },
-      body: JSON.stringify({
-        text,
-        model_id: ELEVENLABS_MODEL,
-        voice_settings: {
-          stability: 0.5,
-          similarity_boost: 0.75,
-          style: 0,
-          speed: 0.9,
-        },
-      }),
-    }
-  );
+  const res = await fetch("/api/tts", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      text,
+      voice_settings: { stability: 0.5, similarity_boost: 0.75, style: 0, speed: 0.9 },
+    }),
+  });
 
   if (!res.ok) {
-    console.error("ElevenLabs error", res.status, await res.text());
+    console.error("TTS proxy error", res.status, await res.text());
     return null;
   }
 
@@ -166,7 +146,7 @@ async function speakWithElevenLabs(
   const url = URL.createObjectURL(blob);
   const audio = new Audio(url);
   audio.onended = () => {
-    URL.revokeObjectURL(url); // libère la mémoire
+    URL.revokeObjectURL(url);
     onEnd();
   };
   audio.onerror = () => {
@@ -183,8 +163,6 @@ export const AudioButton = forwardRef<AudioButtonHandle, AudioButtonProps>(
 function AudioButton({ text, languageCode, variant = "default", disabled = false }, ref) {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const apiKey = import.meta.env.VITE_ELEVENLABS_API_KEY as string | undefined;
-  const hasApiKey = Boolean(apiKey?.trim());
 
   const stop = useCallback(() => {
     if (audioRef.current) {
@@ -207,21 +185,16 @@ function AudioButton({ text, languageCode, variant = "default", disabled = false
 
     const onEnd = () => setIsPlaying(false);
 
-    if (hasApiKey) {
-      const audio = await speakWithElevenLabs(text, languageCode, apiKey!, onEnd).catch(() => null);
-      if (audio) {
-        audioRef.current = audio;
-      } else {
-        // ElevenLabs a échoué — repli sur Web Speech
-        await speakWithWebSpeech(text, languageCode, onEnd);
-      }
+    const audio = await speakWithElevenLabs(text, onEnd).catch(() => null);
+    if (audio) {
+      audioRef.current = audio;
     } else {
-      // Pas de clé API, ou langue non supportée par ElevenLabs → Web Speech directement
+      // Proxy TTS indisponible — repli sur Web Speech
       await speakWithWebSpeech(text, languageCode, onEnd);
     }
-  }, [text, languageCode, isPlaying, hasApiKey, apiKey, stop, disabled]);
+  }, [text, languageCode, isPlaying, stop, disabled]);
 
-  if (!("speechSynthesis" in window) && !hasApiKey) {
+  if (!("speechSynthesis" in window)) {
     return (
       <button
         disabled
@@ -252,7 +225,7 @@ function AudioButton({ text, languageCode, variant = "default", disabled = false
                 : "text-foreground hover:text-primary"
             )
       )}
-      title={hasApiKey ? "ElevenLabs · Écouter les mots révélés" : "Web Speech · Écouter les mots révélés"}
+      title="Écouter les mots révélés"
     >
       {isPlaying ? (
         <Loader2 size={16} className="animate-spin" />
