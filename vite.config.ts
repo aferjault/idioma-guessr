@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import type { Plugin } from "vite";
@@ -6,7 +6,8 @@ import type { Plugin } from "vite";
 // Middleware de dev qui proxifie /api/tts vers ElevenLabs avec la clé serveur.
 // En prod, c'est la Netlify Function netlify/functions/tts.mjs qui joue ce rôle.
 // Mettre ELEVENLABS_API_KEY=xxx dans .env.local (sans le préfixe VITE_).
-function devTtsProxy(): Plugin {
+// loadEnv est nécessaire car Vite n'expose pas les vars sans préfixe VITE_ dans process.env.
+function devTtsProxy(apiKey: string | undefined): Plugin {
   const VOICE_ID = "JBFqnCBsd6RMkjVDRZzb";
   const MODEL_ID = "eleven_v3";
 
@@ -14,7 +15,6 @@ function devTtsProxy(): Plugin {
     name: "dev-tts-proxy",
     configureServer(server) {
       server.middlewares.use("/api/tts", (req, res) => {
-        const apiKey = process.env.ELEVENLABS_API_KEY;
         if (!apiKey) {
           res.statusCode = 503;
           res.end("ELEVENLABS_API_KEY non définie dans .env.local");
@@ -64,23 +64,28 @@ function devTtsProxy(): Plugin {
   };
 }
 
-export default defineConfig({
-  plugins: [react(), devTtsProxy()],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
-  server: {
-    // Proxy local pour contourner le blocage CORS de l'API Tatoeba en développement.
-    // En production, un proxy équivalent doit être configuré côté hébergeur
-    // (voir netlify.toml pour Netlify, ou vercel.json pour Vercel).
-    proxy: {
-      "/tatoeba-api": {
-        target: "https://api.dev.tatoeba.org",
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/tatoeba-api/, ""),
+export default defineConfig(({ mode }) => {
+  // Charge .env.local avec préfixe vide pour récupérer ELEVENLABS_API_KEY (non-VITE_)
+  const env = loadEnv(mode, process.cwd(), "");
+
+  return {
+    plugins: [react(), devTtsProxy(env.ELEVENLABS_API_KEY)],
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "./src"),
       },
     },
-  },
+    server: {
+      // Proxy local pour contourner le blocage CORS de l'API Tatoeba en développement.
+      // En production, un proxy équivalent doit être configuré côté hébergeur
+      // (voir netlify.toml pour Netlify, ou vercel.json pour Vercel).
+      proxy: {
+        "/tatoeba-api": {
+          target: "https://api.dev.tatoeba.org",
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/tatoeba-api/, ""),
+        },
+      },
+    },
+  };
 });
