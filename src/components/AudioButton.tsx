@@ -1,7 +1,8 @@
-// Bouton d'écoute — utilise ElevenLabs si la clé API est définie, sinon Web Speech API
+// Bouton d'écoute — utilise Google Cloud TTS si la clé API est définie, sinon Web Speech API
 import { useState, useCallback, useRef, forwardRef, useImperativeHandle } from "react";
 import { Volume2, VolumeX, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { markLanguageUnsupported } from "@/data/phrases";
 
 export interface AudioButtonHandle {
   stop: () => void;
@@ -12,31 +13,6 @@ interface AudioButtonProps {
   languageCode: string;
   variant?: "default" | "accent";
   disabled?: boolean;
-}
-
-// Voix ElevenLabs : "George" — excellente qualité sur eleven_multilingual_v2.
-// Ce voice_id est un des voices "premade" disponibles sur tous les comptes, y compris gratuits.
-const ELEVENLABS_VOICE_ID = "JBFqnCBsd6RMkjVDRZzb";
-const ELEVENLABS_MODEL = "eleven_multilingual_v2";
-
-// Langues officiellement supportées par eleven_multilingual_v2 (ISO 639-1).
-// Source : https://elevenlabs.io/docs/overview/models
-// Le vietnamien (vi), le tagalog (tl) et d'autres ne sont pas dans cette liste.
-// Si on envoie un language_code non supporté, l'API retourne une erreur 422.
-const ELEVENLABS_SUPPORTED_LANGS = new Set([
-  "en", "ja", "zh", "de", "hi", "fr", "ko", "pt", "it", "es",
-  "id", "nl", "tr", "fil", "pl", "sv", "bg", "ro", "ar", "cs",
-  "el", "fi", "hr", "ms", "sk", "da", "ta", "uk", "ru",
-]);
-
-// BCP-47 → ISO 639-1 pour le paramètre language_code d'ElevenLabs
-function toIso639(bcp47: string): string {
-  return bcp47.split("-")[0];
-}
-
-// Vérifie si ElevenLabs peut gérer cette langue
-function isElevenLabsSupported(languageCode: string): boolean {
-  return ELEVENLABS_SUPPORTED_LANGS.has(toIso639(languageCode));
 }
 
 // --- Fallback Web Speech API ---
@@ -63,6 +39,10 @@ const LANG_FALLBACKS: Record<string, string[]> = {
   "es": ["es-ES", "es-US", "es"],
   "fr": ["fr-FR", "fr"],
 };
+
+function toIso639(bcp47: string): string {
+  return bcp47.split("-")[0];
+}
 
 function getVoicesAsync(): Promise<SpeechSynthesisVoice[]> {
   return new Promise((resolve) => {
@@ -115,55 +95,70 @@ async function speakWithWebSpeech(
   window.speechSynthesis.speak(utterance);
 }
 
-// --- ElevenLabs ---
+// --- Google Cloud TTS ---
 
-async function speakWithElevenLabs(
+// ar-SA → ar-XA : seul code arabe supporté par Google TTS (ar-SA n'existe pas dans l'API)
+const GOOGLE_TTS_LANG_MAP: Record<string, string> = {
+  "ar-SA": "ar-XA",
+};
+
+// Endpoint REST v1 — authentification par clé API en query param.
+// La réponse contient audioContent encodé en base64 (MP3).
+// On tente les voix dans l'ordre de qualité décroissant : Neural2-A → Wavenet-A.
+// Si aucune n'existe (400), retourne null — la langue sera marquée non-supportée par l'appelant.
+async function speakWithGoogleTTS(
   text: string,
   languageCode: string,
   apiKey: string,
   onEnd: () => void
 ): Promise<HTMLAudioElement | null> {
-  const res = await fetch(
-    `https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}?output_format=mp3_44100_128`,
-    {
-      method: "POST",
-      headers: {
-        "xi-api-key": apiKey,
-        "Content-Type": "application/json",
-        Accept: "audio/mpeg",
-      },
-      body: JSON.stringify({
-        text,
-        model_id: ELEVENLABS_MODEL,
-        language_code: toIso639(languageCode),
-        voice_settings: {
-          stability: 0.5,
-          similarity_boost: 0.75,
-          style: 0,
-          speed: 0.9,
-        },
-      }),
-    }
-  );
+  const mappedCode = GOOGLE_TTS_LANG_MAP[languageCode] ?? languageCode;
 
-  if (!res.ok) {
-    console.error("ElevenLabs error", res.status, await res.text());
-    return null;
+  const voiceCandidates: string[] = [
+    `${mappedCode}-Neural2-A`,
+    `${mappedCode}-Wavenet-A`,
+  ];
+
+  for (const voiceName of voiceCandidates) {
+    const voice = { languageCode: mappedCode, name: voiceName };
+
+    const res = await fetch(
+      `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          input: { text },
+          voice,
+          audioConfig: { audioEncoding: "MP3", speakingRate: 0.9 },
+        }),
+      }
+    );
+
+    if (res.status === 400) continue; // voix introuvable → essayer la suivante
+
+    if (!res.ok) {
+      console.error("Google TTS error", res.status, await res.text());
+      return null;
+    }
+
+    const { audioContent } = await res.json() as { audioContent: string };
+
+    // Décodage base64 → Blob audio
+    const byteChars = atob(audioContent);
+    const byteArr = new Uint8Array(byteChars.length);
+    for (let i = 0; i < byteChars.length; i++) byteArr[i] = byteChars.charCodeAt(i);
+    const blob = new Blob([byteArr], { type: "audio/mpeg" });
+    const url = URL.createObjectURL(blob);
+
+    const audio = new Audio(url);
+    audio.onended = () => { URL.revokeObjectURL(url); onEnd(); };
+    audio.onerror = () => { URL.revokeObjectURL(url); onEnd(); };
+    audio.play();
+    return audio;
   }
 
-  const blob = await res.blob();
-  const url = URL.createObjectURL(blob);
-  const audio = new Audio(url);
-  audio.onended = () => {
-    URL.revokeObjectURL(url); // libère la mémoire
-    onEnd();
-  };
-  audio.onerror = () => {
-    URL.revokeObjectURL(url);
-    onEnd();
-  };
-  audio.play();
-  return audio;
+  return null;
 }
 
 // --- Composant ---
@@ -172,7 +167,7 @@ export const AudioButton = forwardRef<AudioButtonHandle, AudioButtonProps>(
 function AudioButton({ text, languageCode, variant = "default", disabled = false }, ref) {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const apiKey = import.meta.env.VITE_ELEVENLABS_API_KEY as string | undefined;
+  const apiKey = import.meta.env.VITE_GOOGLE_TTS_API_KEY as string | undefined;
   const hasApiKey = Boolean(apiKey?.trim());
 
   const stop = useCallback(() => {
@@ -196,16 +191,17 @@ function AudioButton({ text, languageCode, variant = "default", disabled = false
 
     const onEnd = () => setIsPlaying(false);
 
-    if (hasApiKey && isElevenLabsSupported(languageCode)) {
-      const audio = await speakWithElevenLabs(text, languageCode, apiKey!, onEnd).catch(() => null);
+    if (hasApiKey) {
+      const audio = await speakWithGoogleTTS(text, languageCode, apiKey!, onEnd).catch(() => null);
       if (audio) {
         audioRef.current = audio;
       } else {
-        // ElevenLabs a échoué — repli sur Web Speech
+        // Ni Neural2 ni Wavenet disponibles → exclure la langue des prochaines parties
+        markLanguageUnsupported(languageCode);
+        // Repli Web Speech pour la phrase en cours uniquement
         await speakWithWebSpeech(text, languageCode, onEnd);
       }
     } else {
-      // Pas de clé API, ou langue non supportée par ElevenLabs → Web Speech directement
       await speakWithWebSpeech(text, languageCode, onEnd);
     }
   }, [text, languageCode, isPlaying, hasApiKey, apiKey, stop, disabled]);
@@ -241,7 +237,7 @@ function AudioButton({ text, languageCode, variant = "default", disabled = false
                 : "text-foreground hover:text-primary"
             )
       )}
-      title={hasApiKey ? "ElevenLabs · Écouter les mots révélés" : "Web Speech · Écouter les mots révélés"}
+      title={hasApiKey ? "Google TTS · Écouter les mots révélés" : "Web Speech · Écouter les mots révélés"}
     >
       {isPlaying ? (
         <Loader2 size={16} className="animate-spin" />

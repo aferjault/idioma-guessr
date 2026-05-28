@@ -1,73 +1,46 @@
-# React + TypeScript + Vite
+# IdiomaGuessr 🌍
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Un jeu de devinette de langues : une phrase mystère est progressivement révélée à chaque tentative ratée. Saurez-vous identifier la langue avant d'avoir épuisé vos 5 essais ?
 
-Currently, two official plugins are available:
+**[Jouer en ligne →](https://idoma-guessr.netlify.app/)**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+![IdiomaGuessr](public/og-image.png)
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Comment jouer
 
-## Expanding the ESLint configuration
+1. Une phrase dans une langue étrangère est partiellement masquée
+2. Devinez la langue — un nouveau mot se révèle à chaque mauvaise réponse
+3. Des indices progressifs apparaissent : zone géographique (3e tentative), famille linguistique (4e tentative)
+4. 5 tentatives max — enchaînez les victoires pour faire monter votre streak 🔥
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Fonctionnalités
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- 20+ langues jouables avec drapeaux et autocomplétion
+- Lecture audio de la phrase (Web Speech API)
+- Indices progressifs (région, famille de langue)
+- Streak de victoires consécutives avec animation
+- Thème clair / sombre
+- Entièrement responsive (mobile-first)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Stack
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+| Outil | Rôle |
+|---|---|
+| React 19 + TypeScript | UI |
+| Vite | Build & dev server |
+| Tailwind CSS | Styles |
+| Radix UI | Composants accessibles |
+| Web Speech API | Lecture audio TTS |
+
+## Lancer le projet
+
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Projet personnel — portfolio [Arthur Ferjault](https://github.com/aferjault)

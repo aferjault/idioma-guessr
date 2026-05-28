@@ -1,5 +1,5 @@
 // Champ de saisie avec autocomplétion pour deviner la langue
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { ALL_LANGUAGES } from "@/data/phrases";
 import { FlagIcon } from "@/components/FlagIcon";
@@ -57,11 +57,6 @@ export function GuessInput({
     }
   }
 
-  // Réinitialise l'index sélectionné quand la saisie change
-  useEffect(() => {
-    setSelectedIndex(-1);
-  }, [value]);
-
   return (
     <div className="relative w-full">
       <div className="flex gap-2">
@@ -70,7 +65,7 @@ export function GuessInput({
             ref={inputRef}
             type="text"
             value={value}
-            onChange={(e) => { setValue(e.target.value); setShowSuggestions(true); }}
+            onChange={(e) => { setValue(e.target.value); setShowSuggestions(true); setSelectedIndex(-1); }}
             onKeyDown={handleKeyDown}
             onFocus={() => setShowSuggestions(true)}
             onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}

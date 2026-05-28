@@ -42,6 +42,12 @@ function createParticles(): Particle[] {
   });
 }
 
+// Détecte les écritures non-latines (hébreu, arabe, chinois, japonais, coréen, cyrillique, etc.)
+// Seuil : U+024F = fin de Latin Extended-B (conserve les accents européens comme é, ü, ñ)
+function isNonLatinScript(word: string): boolean {
+  return [...word].some(char => (char.codePointAt(0) ?? 0) > 0x024F);
+}
+
 export function PhraseDisplay({ words, revealedCount, isGameOver }: PhraseDisplayProps) {
   const prevRevealed = useRef(revealedCount);
   const [sparkleIndex, setSparkleIndex] = useState<number | null>(null);
@@ -69,6 +75,24 @@ export function PhraseDisplay({ words, revealedCount, isGameOver }: PhraseDispla
         const isNew = index === sparkleIndex;
 
         if (!isRevealed) {
+          // Écritures non-latines : afficher les caractères floutés plutôt que des tirets
+          // (le système d'écriture lui-même est un indice visuel pertinent)
+          if (isNonLatinScript(word)) {
+            return (
+              <span
+                key={index}
+                className="inline-block text-lg font-medium tracking-wide select-none"
+                style={{
+                  filter: isGameOver ? undefined : "blur(6px)",
+                  opacity: isGameOver ? 0.4 : 0.9,
+                  transition: "filter 0.3s ease",
+                }}
+              >
+                {word}
+              </span>
+            );
+          }
+
           return (
             <span
               key={index}
