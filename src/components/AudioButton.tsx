@@ -14,29 +14,14 @@ interface AudioButtonProps {
   disabled?: boolean;
 }
 
-// Voix ElevenLabs : "George" — excellente qualité sur eleven_multilingual_v2.
-// Ce voice_id est un des voices "premade" disponibles sur tous les comptes, y compris gratuits.
+// Voix ElevenLabs : "George" — voice_id premade disponible sur tous les comptes, y compris gratuits.
 const ELEVENLABS_VOICE_ID = "JBFqnCBsd6RMkjVDRZzb";
-const ELEVENLABS_MODEL = "eleven_multilingual_v2";
+// eleven_v3 supporte 70+ langues dont le vietnamien, le tagalog, etc.
+const ELEVENLABS_MODEL = "eleven_v3";
 
-// Langues officiellement supportées par eleven_multilingual_v2 (ISO 639-1).
-// Source : https://elevenlabs.io/docs/overview/models
-// Le vietnamien (vi), le tagalog (tl) et d'autres ne sont pas dans cette liste.
-// Si on envoie un language_code non supporté, l'API retourne une erreur 422.
-const ELEVENLABS_SUPPORTED_LANGS = new Set([
-  "en", "ja", "zh", "de", "hi", "fr", "ko", "pt", "it", "es",
-  "id", "nl", "tr", "fil", "pl", "sv", "bg", "ro", "ar", "cs",
-  "el", "fi", "hr", "ms", "sk", "da", "ta", "uk", "ru",
-]);
-
-// BCP-47 → ISO 639-1 pour le paramètre language_code d'ElevenLabs
+// Extrait le code ISO 639-1 depuis un code BCP-47 (ex: "nb-NO" → "nb")
 function toIso639(bcp47: string): string {
   return bcp47.split("-")[0];
-}
-
-// Vérifie si ElevenLabs peut gérer cette langue
-function isElevenLabsSupported(languageCode: string): boolean {
-  return ELEVENLABS_SUPPORTED_LANGS.has(toIso639(languageCode));
 }
 
 // --- Fallback Web Speech API ---
@@ -62,6 +47,33 @@ const LANG_FALLBACKS: Record<string, string[]> = {
   "it": ["it-IT", "it"],
   "es": ["es-ES", "es-US", "es"],
   "fr": ["fr-FR", "fr"],
+  // Nouvelles langues eleven_v3
+  "nb": ["nb-NO", "no-NO", "no"],
+  "hu": ["hu-HU", "hu"],
+  "lt": ["lt-LT", "lt"],
+  "lv": ["lv-LV", "lv"],
+  "et": ["et-EE", "et"],
+  "sr": ["sr-RS", "sr-Cyrl", "sr"],
+  "sl": ["sl-SI", "sl"],
+  "ca": ["ca-ES", "ca"],
+  "mk": ["mk-MK", "mk"],
+  "is": ["is-IS", "is"],
+  "gl": ["gl-ES", "gl"],
+  "ga": ["ga-IE", "ga"],
+  "cy": ["cy-GB", "cy"],
+  "bs": ["bs-BA", "bs"],
+  "he": ["he-IL", "he"],
+  "fa": ["fa-IR", "fa"],
+  "az": ["az-AZ", "az"],
+  "kk": ["kk-KZ", "kk"],
+  "ka": ["ka-GE", "ka"],
+  "hy": ["hy-AM", "hy"],
+  "th": ["th-TH", "th"],
+  "bn": ["bn-BD", "bn-IN", "bn"],
+  "ur": ["ur-PK", "ur"],
+  "sw": ["sw-KE", "sw-TZ", "sw"],
+  "af": ["af-ZA", "af"],
+  "be": ["be-BY", "be"],
 };
 
 function getVoicesAsync(): Promise<SpeechSynthesisVoice[]> {
@@ -135,7 +147,6 @@ async function speakWithElevenLabs(
       body: JSON.stringify({
         text,
         model_id: ELEVENLABS_MODEL,
-        language_code: toIso639(languageCode),
         voice_settings: {
           stability: 0.5,
           similarity_boost: 0.75,
@@ -196,7 +207,7 @@ function AudioButton({ text, languageCode, variant = "default", disabled = false
 
     const onEnd = () => setIsPlaying(false);
 
-    if (hasApiKey && isElevenLabsSupported(languageCode)) {
+    if (hasApiKey) {
       const audio = await speakWithElevenLabs(text, languageCode, apiKey!, onEnd).catch(() => null);
       if (audio) {
         audioRef.current = audio;

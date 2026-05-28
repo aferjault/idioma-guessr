@@ -1,0 +1,11 @@
+[build]
+  publish = "dist"
+  command = "npm run build"
+
+# Proxy Tatoeba : redirige /tatoeba-api/* vers l'API Tatoeba côté serveur,
+# ce qui évite les restrictions CORS dans le navigateur.
+[[redirects]]
+  from = "/tatoeba-api/*"
+  to = "https://api.dev.tatoeba.org/:splat"
+  status = 200
+  force = true
