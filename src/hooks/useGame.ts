@@ -1,18 +1,13 @@
 // Hook principal gérant toute la logique du jeu IdiomaGuessr
-import { useState, useCallback, useMemo } from "react";
-import { getNextPhrase, PHRASES } from "@/data/phrases";
+import { useState, useCallback, useMemo, useEffect } from "react";
+import { fetchRandomPhrase } from "@/services/tatoebaService";
+import { ALL_LANGUAGES } from "@/data/phrases";
+import type { Phrase } from "@/data/phrases";
 import type { GuessResult } from "@/components/GuessList";
 
 const MAX_GUESSES = 5;
 
 export type GameStatus = "playing" | "won" | "lost";
-
-export interface GameState {
-  phraseId: string;
-  revealedCount: number;
-  guesses: GuessResult[];
-  status: GameStatus;
-}
 
 // Découpe un texte en unités de sens adaptées à chaque langue.
 // Intl.Segmenter comprend que le japonais/chinois/coréen n'utilisent pas d'espaces
@@ -30,31 +25,45 @@ function splitIntoWords(text: string, languageCode: string): string[] {
 }
 
 export function useGame() {
-  const [phrase, setPhrase] = useState(() => {
-    const p = getNextPhrase();
-    console.log("[DEBUG] Langue à deviner :", p.language, `(${p.languageCode})`);
-    return p;
-  });
+  const [phrase, setPhrase] = useState<Phrase | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [revealedCount, setRevealedCount] = useState(1);
   const [guesses, setGuesses] = useState<GuessResult[]>([]);
   const [status, setStatus] = useState<GameStatus>("playing");
 
+  const loadPhrase = useCallback(async () => {
+    setIsLoading(true);
+    setPhrase(null);
+    setRevealedCount(1);
+    setGuesses([]);
+    setStatus("playing");
+    const p = await fetchRandomPhrase();
+    console.log("[DEBUG] Langue à deviner :", p.language, `(${p.languageCode})`);
+    setPhrase(p);
+    setIsLoading(false);
+  }, []);
+
+  // Chargement de la première phrase au montage du composant
+  useEffect(() => {
+    loadPhrase();
+  }, []);
+
   // Recalcul uniquement quand la phrase change
   const words = useMemo(
-    () => splitIntoWords(phrase.text, phrase.languageCode),
+    () => (phrase ? splitIntoWords(phrase.text, phrase.languageCode) : []),
     [phrase]
   );
 
-  // Cherche les infos de la langue devinée pour récupérer le code BCP-47
+  // Cherche les infos de la langue devinée (BCP-47 et drapeau) pour l'historique
   function findLanguageInfo(languageName: string) {
-    return PHRASES.find(
-      (p) => p.language.toLowerCase() === languageName.toLowerCase()
+    return ALL_LANGUAGES.find(
+      (l) => l.language.toLowerCase() === languageName.toLowerCase()
     );
   }
 
   const guess = useCallback(
     (languageName: string) => {
-      if (status !== "playing") return;
+      if (status !== "playing" || !phrase) return;
 
       const isCorrect =
         phrase.language.toLowerCase() === languageName.toLowerCase();
@@ -88,16 +97,12 @@ export function useGame() {
   );
 
   const restart = useCallback(() => {
-    const nextPhrase = getNextPhrase();
-    console.log("[DEBUG] Langue à deviner :", nextPhrase.language, `(${nextPhrase.languageCode})`);
-    setPhrase(nextPhrase);
-    setRevealedCount(1);
-    setGuesses([]);
-    setStatus("playing");
-  }, [phrase.id]);
+    loadPhrase();
+  }, [loadPhrase]);
 
   return {
     phrase,
+    isLoading,
     words,
     revealedCount,
     guesses,

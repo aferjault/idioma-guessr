@@ -24,6 +24,7 @@ import { StreakCounter } from "@/components/StreakCounter";
 function App() {
   const {
     phrase,
+    isLoading,
     words,
     revealedCount,
     guesses,
@@ -202,73 +203,83 @@ function App() {
 
         {/* Corps du jeu */}
         <main className="bg-background flex-1 flex flex-col items-center justify-start px-4 py-8 sm:py-10 gap-8 sm:gap-10 w-full">
-          {/* Numéro de mots révélés */}
-          <div className="text-xs text-muted-foreground font-medium tracking-wider uppercase">
-            {revealedCount} mot{revealedCount > 1 ? "s" : ""} révélé
-            {revealedCount > 1 ? "s" : ""} sur {words.length}
-          </div>
-
-          {/* Zone d'affichage de la phrase */}
-          <div className="w-full bg-card border border-border rounded-2xl p-4 sm:p-6 min-h-32 flex flex-col items-center justify-center gap-4 relative overflow-hidden">
-            {/* Ombrage vertical gauche */}
-            <div className="absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-card to-transparent pointer-events-none z-10" />
-            {/* Ombrage vertical droit */}
-            <div className="absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-card to-transparent pointer-events-none z-10" />
-            <PhraseDisplay
-              words={words}
-              revealedCount={revealedCount}
-              isGameOver={status !== "playing"}
-            />
-            <AudioButton
-              text={revealedText}
-              languageCode={phrase.languageCode}
-            />
-          </div>
-
-          {/* Indices progressifs */}
-          <div className="w-full flex flex-col gap-2">
-            {/* Zone géographique — visible à partir de la 3e tentative */}
-            {guesses.length >= 3 && phrase.hint && (
-              <div className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border bg-muted/50 text-sm animate-fade-in">
-                <MapPin size={14} className="text-primary shrink-0" />
-                <span className="text-muted-foreground">Zone :</span>
-                <span className="text-foreground font-medium">
-                  {phrase.hint}
-                </span>
+          {isLoading || !phrase ? (
+            /* Chargement d'une phrase depuis Tatoeba */
+            <div className="flex-1 flex flex-col items-center justify-center gap-3">
+              <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              <p className="text-sm text-muted-foreground">Chargement d'une phrase…</p>
+            </div>
+          ) : (
+            <>
+              {/* Numéro de mots révélés */}
+              <div className="text-xs text-muted-foreground font-medium tracking-wider uppercase">
+                {revealedCount} mot{revealedCount > 1 ? "s" : ""} révélé
+                {revealedCount > 1 ? "s" : ""} sur {words.length}
               </div>
-            )}
-            {/* Famille linguistique — visible à partir de la 4e tentative */}
-            {guesses.length >= 4 && phrase.languageFamily && (
-              <div className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border bg-muted/50 text-sm animate-fade-in">
-                <Globe size={14} className="text-primary shrink-0" />
-                <span className="text-muted-foreground">Famille :</span>
-                <span className="text-foreground font-medium">
-                  {phrase.languageFamily}
-                </span>
+
+              {/* Zone d'affichage de la phrase */}
+              <div className="w-full bg-card border border-border rounded-2xl p-4 sm:p-6 min-h-32 flex flex-col items-center justify-center gap-4 relative overflow-hidden">
+                {/* Ombrage vertical gauche */}
+                <div className="absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-card to-transparent pointer-events-none z-10" />
+                {/* Ombrage vertical droit */}
+                <div className="absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-card to-transparent pointer-events-none z-10" />
+                <PhraseDisplay
+                  words={words}
+                  revealedCount={revealedCount}
+                  isGameOver={status !== "playing"}
+                />
+                <AudioButton
+                  text={revealedText}
+                  languageCode={phrase.languageCode}
+                />
               </div>
-            )}
-          </div>
 
-          {/* Barre de progression */}
-          <ProgressBar used={guesses.length} max={maxGuesses} />
+              {/* Indices progressifs */}
+              <div className="w-full flex flex-col gap-2">
+                {/* Zone géographique — visible à partir de la 3e tentative */}
+                {guesses.length >= 3 && phrase.hint && (
+                  <div className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border bg-muted/50 text-sm animate-fade-in">
+                    <MapPin size={14} className="text-primary shrink-0" />
+                    <span className="text-muted-foreground">Zone :</span>
+                    <span className="text-foreground font-medium">
+                      {phrase.hint}
+                    </span>
+                  </div>
+                )}
+                {/* Famille linguistique — visible à partir de la 4e tentative */}
+                {guesses.length >= 4 && phrase.languageFamily && (
+                  <div className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border bg-muted/50 text-sm animate-fade-in">
+                    <Globe size={14} className="text-primary shrink-0" />
+                    <span className="text-muted-foreground">Famille :</span>
+                    <span className="text-foreground font-medium">
+                      {phrase.languageFamily}
+                    </span>
+                  </div>
+                )}
+              </div>
 
-          {/* Champ de saisie */}
-          {status === "playing" && (
-            <GuessInput
-              onGuess={guess}
-              disabled={status !== "playing"}
-              usedGuesses={usedGuessLanguages}
-            />
-          )}
+              {/* Barre de progression */}
+              <ProgressBar used={guesses.length} max={maxGuesses} />
 
-          {/* Historique des tentatives */}
-          {guesses.length > 0 && (
-            <GuessList guesses={guesses} maxGuesses={maxGuesses} />
+              {/* Champ de saisie */}
+              {status === "playing" && (
+                <GuessInput
+                  onGuess={guess}
+                  disabled={status !== "playing"}
+                  usedGuesses={usedGuessLanguages}
+                />
+              )}
+
+              {/* Historique des tentatives */}
+              {guesses.length > 0 && (
+                <GuessList guesses={guesses} maxGuesses={maxGuesses} />
+              )}
+            </>
           )}
         </main>
 
         {/* Modal fin de partie */}
-        {status !== "playing" && (
+        {status !== "playing" && phrase && (
           <GameOverModal
             won={status === "won"}
             phrase={phrase}
