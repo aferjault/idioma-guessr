@@ -2,7 +2,7 @@
 
 Jeu de devinette de langues. 
 Une phrase dans une langue étrangère est progressivement révélée, à chaque tentative ratée, un mot supplémentaire apparaît. 
-Tu as 5 essais pour trouver la langue !
+**Tu as 5 essais pour trouver la langue !**
 
 ## Démo
 
