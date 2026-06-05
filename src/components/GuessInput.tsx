@@ -1,8 +1,89 @@
 // Champ de saisie avec autocomplétion pour deviner la langue
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, Fragment } from "react";
 import { cn } from "@/lib/utils";
 import { ALL_LANGUAGES } from "@/data/phrases";
 import { FlagIcon } from "@/components/FlagIcon";
+
+const CONTINENT_ORDER = ["Europe", "Asie", "Moyen-Orient", "Afrique", "Autre"];
+
+// Ordre de popularité (nombre total de locuteurs) dans chaque continent
+const CONTINENT_LANGUAGE_ORDER: Record<string, string[]> = {
+  Europe: [
+    "Anglais", "Espagnol", "Français", "Portugais", "Russe", "Allemand",
+    "Italien", "Ukrainien", "Polonais", "Roumain", "Néerlandais", "Serbe",
+    "Hongrois", "Grec", "Tchèque", "Suédois", "Catalan", "Bulgare",
+    "Biélorusse", "Slovaque", "Danois", "Finnois", "Norvégien", "Croate",
+    "Bosnien", "Lituanien", "Slovène", "Macédonien", "Letton", "Estonien",
+    "Irlandais", "Gallois", "Islandais",
+  ],
+  Asie: [
+    "Chinois (Mandarin)", "Hindi", "Bengali", "Ourdou", "Indonésien",
+    "Japonais", "Vietnamien", "Filipino", "Turc", "Malais", "Coréen",
+    "Tamoul", "Thaï", "Kazakh", "Azerbaïdjanais", "Arménien", "Géorgien",
+  ],
+  "Moyen-Orient": ["Arabe", "Persan", "Hébreu"],
+  Afrique: ["Swahili", "Afrikaans"],
+  Autre: [],
+};
+
+// Affectation de chaque langue à un continent pour le regroupement visuel
+const LANGUAGE_CONTINENT: Record<string, string> = {
+  Afrikaans: "Afrique",
+  Allemand: "Europe",
+  Anglais: "Europe",
+  Arabe: "Moyen-Orient",
+  Arménien: "Asie",
+  Azerbaïdjanais: "Asie",
+  Bengali: "Asie",
+  Biélorusse: "Europe",
+  Bosnien: "Europe",
+  Bulgare: "Europe",
+  Catalan: "Europe",
+  "Chinois (Mandarin)": "Asie",
+  Coréen: "Asie",
+  Croate: "Europe",
+  Danois: "Europe",
+  Estonien: "Europe",
+  Espagnol: "Europe",
+  Filipino: "Asie",
+  Finnois: "Europe",
+  Français: "Europe",
+  Gallois: "Europe",
+  Géorgien: "Asie",
+  Grec: "Europe",
+  Hébreu: "Moyen-Orient",
+  Hindi: "Asie",
+  Hongrois: "Europe",
+  Indonésien: "Asie",
+  Irlandais: "Europe",
+  Islandais: "Europe",
+  Italien: "Europe",
+  Japonais: "Asie",
+  Kazakh: "Asie",
+  Letton: "Europe",
+  Lituanien: "Europe",
+  Macédonien: "Europe",
+  Malais: "Asie",
+  Néerlandais: "Europe",
+  Norvégien: "Europe",
+  Ourdou: "Asie",
+  Persan: "Moyen-Orient",
+  Polonais: "Europe",
+  Portugais: "Europe",
+  Roumain: "Europe",
+  Russe: "Europe",
+  Serbe: "Europe",
+  Slovaque: "Europe",
+  Slovène: "Europe",
+  Suédois: "Europe",
+  Swahili: "Afrique",
+  Tamoul: "Asie",
+  Thaï: "Asie",
+  Tchèque: "Europe",
+  Turc: "Asie",
+  Ukrainien: "Europe",
+  Vietnamien: "Asie",
+};
 
 interface GuessInputProps {
   onGuess: (language: string) => void;
@@ -57,10 +138,6 @@ export function GuessInput({
     }
   }
 
-  // Réinitialise l'index sélectionné quand la saisie change
-  useEffect(() => {
-    setSelectedIndex(-1);
-  }, [value]);
 
   return (
     <div className="relative w-full">
@@ -70,7 +147,7 @@ export function GuessInput({
             ref={inputRef}
             type="text"
             value={value}
-            onChange={(e) => { setValue(e.target.value); setShowSuggestions(true); }}
+            onChange={(e) => { setValue(e.target.value); setShowSuggestions(true); setSelectedIndex(-1); }}
             onKeyDown={handleKeyDown}
             onFocus={() => setShowSuggestions(true)}
             onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
@@ -86,24 +163,45 @@ export function GuessInput({
             autoComplete="off"
           />
 
-          {/* Liste de suggestions */}
+          {/* Liste de suggestions groupées par continent */}
           {showSuggestions && suggestions.length > 0 && (
-            <ul className="absolute top-full mt-1 left-0 right-0 z-50 bg-card border border-border rounded-lg shadow-lg overflow-hidden animate-fade-in">
-              {suggestions.map((lang, i) => (
-                <li
-                  key={lang.languageCode}
-                  className={cn(
-                    "flex items-center gap-2 px-4 py-2.5 cursor-pointer text-sm transition-colors",
-                    i === selectedIndex
-                      ? "bg-primary/20 text-foreground"
-                      : "hover:bg-muted text-foreground",
-                  )}
-                  onMouseDown={() => handleSubmit(lang.language)}
-                >
-                  <FlagIcon languageCode={lang.languageCode} flagCode={lang.flagCode} />
-                  <span className="font-medium">{lang.language}</span>
-                </li>
-              ))}
+            <ul className="absolute top-full mt-1 left-0 right-0 z-50 bg-card border border-border rounded-lg shadow-lg overflow-hidden animate-fade-in max-h-72 overflow-y-auto">
+              {CONTINENT_ORDER.map((continent) => {
+                const order = CONTINENT_LANGUAGE_ORDER[continent] ?? [];
+                const langs = suggestions
+                  .filter((l) => (LANGUAGE_CONTINENT[l.language] ?? "Autre") === continent)
+                  .sort((a, b) => {
+                    const ia = order.indexOf(a.language);
+                    const ib = order.indexOf(b.language);
+                    return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+                  });
+                if (langs.length === 0) return null;
+                return (
+                  <Fragment key={continent}>
+                    <li className="px-3 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider bg-muted/50 border-t border-border first:border-t-0 select-none">
+                      {continent}
+                    </li>
+                    {langs.map((lang) => {
+                      const flatIndex = suggestions.indexOf(lang);
+                      return (
+                        <li
+                          key={lang.languageCode}
+                          className={cn(
+                            "flex items-center gap-2 px-4 py-2.5 cursor-pointer text-sm transition-colors",
+                            flatIndex === selectedIndex
+                              ? "bg-primary/20 text-foreground"
+                              : "hover:bg-muted text-foreground",
+                          )}
+                          onMouseDown={() => handleSubmit(lang.language)}
+                        >
+                          <FlagIcon languageCode={lang.languageCode} flagCode={lang.flagCode} />
+                          <span className="font-medium">{lang.language}</span>
+                        </li>
+                      );
+                    })}
+                  </Fragment>
+                );
+              })}
             </ul>
           )}
         </div>
